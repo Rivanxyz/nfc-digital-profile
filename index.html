@@ -3,108 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <meta name="description" content="Halaman kontak digital yang dibuka melalui NFC.">
-  <title>NFC Digital Profile</title>
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Profil digital dan pembaca NFC berbasis NDEF.">
+  <title>NFC Digital Profile & Reader</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0b1220;
-      --panel: rgba(20, 31, 49, .82);
-      --muted: #9aa9bd;
-      --text: #f4f7fb;
-      --line: rgba(255,255,255,.09);
+      --bg: #08111f;
+      --panel: rgba(19, 31, 49, .88);
+      --panel-2: rgba(255,255,255,.035);
+      --muted: #9aabc1;
+      --text: #f3f7fc;
+      --line: rgba(255,255,255,.10);
+      --mint: #43d6b2;
+      --blue: #7897ff;
+      --danger: #ff8585;
+      --warning: #f4c66a;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; padding: 28px 16px;
-      display: grid; place-items: center;
+      margin: 0; min-height: 100vh; padding: 28px 15px 40px;
+      display: flex; justify-content: center; align-items: flex-start;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(ellipse at 12% 8%, rgba(31, 134, 117, .23), transparent 36%),
-        radial-gradient(ellipse at 88% 90%, rgba(89, 91, 210, .22), transparent 34%),
+        radial-gradient(ellipse at 8% 4%, rgba(31, 155, 131, .22), transparent 34%),
+        radial-gradient(ellipse at 95% 82%, rgba(89, 91, 210, .20), transparent 34%),
         var(--bg);
     }
-    .card {
-      width: min(100%, 430px); padding: 30px 24px 22px;
-      border: 1px solid var(--line); border-radius: 28px;
+    .shell { width: min(100%, 560px); display: grid; gap: 16px; }
+    .panel {
+      border: 1px solid var(--line); border-radius: 25px; padding: 24px 20px;
       background: var(--panel); backdrop-filter: blur(18px);
-      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+      box-shadow: 0 22px 70px rgba(0,0,0,.28);
     }
+    header { text-align: center; }
     .mark {
-      width: 62px; height: 62px; margin: 0 auto 18px; border-radius: 20px;
+      width: 58px; height: 58px; margin: 0 auto 15px; border-radius: 19px;
       display: grid; place-items: center; font-size: 27px;
       background: linear-gradient(135deg, #20b89a, #5277e8);
       box-shadow: 0 10px 30px rgba(32,184,154,.2);
     }
-    header { text-align: center; }
-    h1 { margin: 0; font-size: 25px; letter-spacing: -.7px; }
-    .subtitle { margin: 9px 0 25px; color: var(--muted); font-size: 13px; }
-    .label {
-      margin: 0 0 12px; color: #bdc9d8; font-size: 11px;
-      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    h1 { margin: 0; font-size: 24px; letter-spacing: -.7px; }
+    h2 { margin: 0; font-size: 18px; letter-spacing: -.25px; }
+    .subtitle { margin: 8px 0 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .eyebrow {
+      margin: 0 0 12px; color: #bdc9d8; font-size: 10px; font-weight: 800;
+      letter-spacing: 1.45px; text-transform: uppercase;
     }
-    .links { display: grid; gap: 11px; }
+    .links { display: grid; gap: 10px; }
     .link {
-      display: flex; align-items: center; gap: 14px; padding: 15px;
-      border: 1px solid var(--line); border-radius: 17px;
-      color: var(--text); text-decoration: none; background: rgba(255,255,255,.035);
+      display: flex; align-items: center; gap: 13px; padding: 13px;
+      border: 1px solid var(--line); border-radius: 16px;
+      color: var(--text); text-decoration: none; background: var(--panel-2);
       transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      min-width: 0;
     }
-    .link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.07); }
+    .link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.07); }
     .icon {
-      width: 43px; height: 43px; flex: 0 0 43px; border-radius: 14px;
-      display: grid; place-items: center; font-size: 21px;
+      width: 42px; height: 42px; flex: 0 0 42px; border-radius: 13px;
+      display: grid; place-items: center; font-size: 20px; background: rgba(255,255,255,.07);
     }
     .wa .icon { background: rgba(37,211,102,.15); }
     .ig .icon { background: rgba(220,75,145,.15); }
     .map .icon { background: rgba(73,145,245,.16); }
     .link-copy { min-width: 0; flex: 1; }
-    .link-title { display: block; font-size: 14px; font-weight: 700; }
+    .link-title { display: block; font-size: 14px; font-weight: 750; }
     .link-detail { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
     .arrow { color: #8fa1b8; font-size: 20px; }
     .empty {
-      padding: 18px; border: 1px dashed rgba(255,255,255,.18); border-radius: 16px;
+      padding: 16px; border: 1px dashed rgba(255,255,255,.18); border-radius: 15px;
       color: var(--muted); font-size: 13px; line-height: 1.6; text-align: center;
     }
-    footer { margin-top: 24px; text-align: center; color: #728198; font-size: 11px; }
-    .demo {
-      display: inline-block; margin-top: 15px; color: #8edcca; font-size: 12px;
-      text-decoration: none;
+    .reader-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+    .reader-mark {
+      width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center;
+      border-radius: 15px; font-size: 22px; color: var(--mint);
+      background: rgba(67,214,178,.11); border: 1px solid rgba(67,214,178,.16);
     }
+    .reader-description { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 7px 0 17px; }
+    .actions { display: flex; gap: 9px; }
+    button {
+      appearance: none; border: 0; border-radius: 13px; padding: 13px 15px;
+      font: inherit; font-size: 13px; font-weight: 750; cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    button:active { transform: scale(.985); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .primary { flex: 1; color: #061b18; background: linear-gradient(115deg, #53e0bd, #8fafff); }
+    .secondary { color: var(--text); background: rgba(255,255,255,.08); border: 1px solid var(--line); }
+    .status {
+      margin-top: 13px; padding: 11px 12px; border-radius: 12px;
+      color: var(--muted); background: rgba(255,255,255,.035); border: 1px solid var(--line);
+      font-size: 12px; line-height: 1.55;
+    }
+    .status.success { color: #a5f0d8; border-color: rgba(67,214,178,.25); background: rgba(67,214,178,.07); }
+    .status.error { color: #ffb4b4; border-color: rgba(255,133,133,.25); background: rgba(255,133,133,.07); }
+    .status.warning { color: #f5d99a; border-color: rgba(244,198,106,.25); background: rgba(244,198,106,.07); }
+    .results { display: grid; gap: 10px; margin-top: 16px; }
+    .results[hidden] { display: none; }
+    .results-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .count { color: var(--mint); font-size: 11px; font-weight: 800; }
+    .record {
+      min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 15px;
+      background: rgba(255,255,255,.035);
+    }
+    .record-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .record-kind { font-size: 12px; font-weight: 800; overflow-wrap: anywhere; }
+    .record-no { color: var(--muted); font-size: 10px; white-space: nowrap; }
+    .meta { color: var(--muted); font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; margin-top: 8px; }
+    .record-value { font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .record-value a, .record-download { color: #9ab6ff; overflow-wrap: anywhere; }
+    .record-value pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .record-image { display: block; max-width: 100%; max-height: 260px; object-fit: contain; border-radius: 10px; margin-top: 8px; background: rgba(0,0,0,.2); }
+    .record-download { display: inline-block; margin-top: 9px; font-size: 12px; }
+    .nested { margin-top: 10px; padding-left: 12px; border-left: 2px solid rgba(120,151,255,.35); display: grid; gap: 8px; }
+    .nested .record { background: rgba(0,0,0,.12); padding: 11px; }
+    .tip { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+    footer { padding: 2px 10px; text-align: center; color: #728198; font-size: 10px; line-height: 1.7; }
+    footer a { color: #9ab6ff; text-decoration: none; }
+    @media (max-width: 390px) { .panel { padding: 21px 16px; } .actions { flex-direction: column; } }
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
   </style>
 </head>
 <body>
-  <main class="card">
-    <header>
-      <div class="mark" aria-hidden="true">⌁</div>
-      <h1>Terhubung lebih mudah</h1>
-      <p class="subtitle">Pilih cara untuk menghubungi atau menemukan kami.</p>
-    </header>
+  <main class="shell">
+    <section class="panel" aria-labelledby="page-title">
+      <header>
+        <div class="mark" aria-hidden="true">⌁</div>
+        <h1 id="page-title">Terhubung lebih mudah</h1>
+        <p class="subtitle">Pilih cara untuk menghubungi atau menemukan kami.</p>
+      </header>
+      <p class="eyebrow">Profil digital</p>
+      <section id="links" class="links" aria-live="polite"></section>
+    </section>
 
-    <p class="label">Hubungi & temukan</p>
-    <section id="links" class="links" aria-live="polite"></section>
+    <section class="panel" aria-labelledby="reader-title">
+      <div class="reader-head">
+        <div class="reader-mark" aria-hidden="true">▦</div>
+        <div>
+          <h2 id="reader-title">Pembaca NFC</h2>
+          <div class="reader-description">Baca record NDEF pada kartu atau tag NFC, lalu tampilkan isi yang dikenali di halaman ini.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="scan-button" class="primary" type="button">Mulai baca NFC</button>
+        <button id="stop-button" class="secondary" type="button" disabled>Hentikan</button>
+      </div>
+      <div id="scan-status" class="status" role="status" aria-live="polite">Siap. Tekan “Mulai baca NFC”, izinkan akses jika diminta, lalu dekatkan tag NFC ke bagian belakang HP.</div>
+      <section id="scan-results" class="results" aria-live="polite" hidden>
+        <div class="results-top">
+          <p class="eyebrow" style="margin:0">Hasil pembacaan terakhir</p>
+          <span id="record-count" class="count"></span>
+        </div>
+        <div id="record-list" class="results"></div>
+      </section>
+      <p class="tip">Catatan: fitur pemindai langsung memerlukan HP Android dengan NFC aktif dan browser yang mendukung Web NFC (disarankan Google Chrome Android). Untuk tag yang otomatis membuka halaman ini, tempelkan sekali lagi setelah halaman terbuka agar record lainnya dibaca.</p>
+    </section>
+
     <footer>
-      NFC DIGITAL PROFILE
-      <br>Tap · Connect · Explore
-      <div id="demo-wrap"></div>
+      NFC DIGITAL PROFILE & READER<br>
+      Tap · Read · Connect · Explore
     </footer>
   </main>
 
   <script>
     (() => {
+      "use strict";
+
       const params = new URLSearchParams(window.location.search);
       const links = document.getElementById("links");
+      const scanButton = document.getElementById("scan-button");
+      const stopButton = document.getElementById("stop-button");
+      const statusBox = document.getElementById("scan-status");
+      const resultsSection = document.getElementById("scan-results");
+      const recordList = document.getElementById("record-list");
+      const recordCount = document.getElementById("record-count");
 
-      // Supports: ?wa=628...&ig=username&lat=-8.1&lng=113.7
-      const waRaw = (params.get("wa") || "").trim();
-      const igRaw = (params.get("ig") || "").trim().replace(/^@/, "");
-      const lat = Number(params.get("lat"));
-      const lng = Number(params.get("lng"));
+      let abortController = null;
+      let activeReader = null;
+      let objectUrls = [];
 
-      const addLink = ({ cls, icon, title, detail, href, label }) => {
+      function addProfileLink({ cls, icon, title, detail, href, label }) {
         const a = document.createElement("a");
         a.className = `link ${cls}`;
         a.href = href;
@@ -130,48 +210,255 @@
         arrow.setAttribute("aria-hidden", "true");
         a.append(iconEl, copy, arrow);
         links.appendChild(a);
-      };
+      }
 
-      // Indonesian WhatsApp numbers are expected in international format without +.
+      // Profile mode: query parameters remain compatible with the previous version.
+      const waRaw = (params.get("wa") || "").trim();
+      const igRaw = (params.get("ig") || "").trim().replace(/^@/, "");
+      const latRaw = params.get("lat");
+      const lngRaw = params.get("lng");
+      const lat = latRaw === null || latRaw === "" ? NaN : Number(latRaw);
+      const lng = lngRaw === null || lngRaw === "" ? NaN : Number(lngRaw);
       const wa = waRaw.replace(/[^\d]/g, "");
+
       if (/^\d{8,15}$/.test(wa)) {
-        addLink({
-          cls: "wa", icon: "◉", title: "WhatsApp",
-          detail: "+" + wa, href: "https://wa.me/" + wa,
-          label: "Hubungi melalui WhatsApp"
-        });
+        addProfileLink({ cls: "wa", icon: "◉", title: "WhatsApp", detail: "+" + wa,
+          href: "https://wa.me/" + wa, label: "Hubungi melalui WhatsApp" });
       }
-
       if (/^[A-Za-z0-9._]{1,30}$/.test(igRaw)) {
-        addLink({
-          cls: "ig", icon: "◎", title: "Instagram",
-          detail: "@" + igRaw, href: "https://www.instagram.com/" + encodeURIComponent(igRaw) + "/",
-          label: "Buka profil Instagram"
-        });
+        addProfileLink({ cls: "ig", icon: "◎", title: "Instagram", detail: "@" + igRaw,
+          href: "https://www.instagram.com/" + encodeURIComponent(igRaw) + "/", label: "Buka profil Instagram" });
       }
-
-      if (params.has("lat") && params.has("lng") &&
-          Number.isFinite(lat) && Number.isFinite(lng) &&
+      if (latRaw !== null && lngRaw !== null && Number.isFinite(lat) && Number.isFinite(lng) &&
           lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`;
-        addLink({
-          cls: "map", icon: "⌖", title: "Lokasi",
-          detail: "Lihat di Google Maps", href: mapsUrl,
-          label: "Buka lokasi di Google Maps"
-        });
+        addProfileLink({ cls: "map", icon: "⌖", title: "Lokasi", detail: "Lihat di Google Maps",
+          href: `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`,
+          label: "Buka lokasi di Google Maps" });
       }
-
       if (links.children.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "Belum ada informasi kontak yang tersedia. Pastikan NFC tag berisi URL dengan parameter wa, ig, atau koordinat lat dan lng.";
+        empty.textContent = "Belum ada tautan profil pada alamat halaman ini. Kamu tetap bisa menggunakan pembaca NFC di bawah untuk membaca isi tag.";
         links.appendChild(empty);
-        const demo = document.createElement("a");
-        demo.className = "demo";
-        demo.href = "?wa=6281234567890&ig=contoh.akun&lat=-8.172&lng=113.701";
-        demo.textContent = "Lihat contoh tampilan";
-        document.getElementById("demo-wrap").appendChild(demo);
       }
+
+      function setStatus(message, type = "") {
+        statusBox.textContent = message;
+        statusBox.className = "status" + (type ? " " + type : "");
+      }
+
+      function bytesFromDataView(data) {
+        if (!data) return new Uint8Array();
+        return new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+      }
+
+      function decodeData(data, encoding = "utf-8") {
+        if (!data) return "";
+        try { return new TextDecoder(encoding || "utf-8").decode(data); }
+        catch (_) { return new TextDecoder("utf-8").decode(data); }
+      }
+
+      function safeHttpUrl(value) {
+        try {
+          const parsed = new URL(value);
+          return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : null;
+        } catch (_) { return null; }
+      }
+
+      function addDownloadLink(container, bytes, mediaType, filename) {
+        const blob = new Blob([bytes], { type: mediaType || "application/octet-stream" });
+        const objectUrl = URL.createObjectURL(blob);
+        objectUrls.push(objectUrl);
+        const a = document.createElement("a");
+        a.className = "record-download";
+        a.href = objectUrl;
+        a.download = filename || "nfc-record.bin";
+        a.textContent = "Unduh data record";
+        container.appendChild(a);
+      }
+
+      function clearOldResults() {
+        objectUrls.forEach((url) => URL.revokeObjectURL(url));
+        objectUrls = [];
+        recordList.replaceChildren();
+      }
+
+      function createRecordCard(record, index, nested = false) {
+        const article = document.createElement("article");
+        article.className = "record";
+
+        const top = document.createElement("div");
+        top.className = "record-top";
+        const kind = document.createElement("span");
+        kind.className = "record-kind";
+        kind.textContent = record.recordType || "unknown";
+        const number = document.createElement("span");
+        number.className = "record-no";
+        number.textContent = (nested ? "Sub-record " : "Record ") + (index + 1);
+        top.append(kind, number);
+        article.appendChild(top);
+
+        const bytes = bytesFromDataView(record.data);
+        const mediaType = record.mediaType || "";
+        const details = [];
+        if (record.id) details.push("ID: " + record.id);
+        if (mediaType) details.push("MIME: " + mediaType);
+        if (record.lang) details.push("Bahasa: " + record.lang);
+        if (record.encoding) details.push("Encoding: " + record.encoding);
+        details.push("Ukuran data: " + bytes.byteLength + " byte");
+
+        const value = document.createElement("div");
+        value.className = "record-value";
+
+        if (record.recordType === "empty") {
+          value.textContent = "Record kosong.";
+        } else if (record.recordType === "text") {
+          value.textContent = decodeData(record.data, record.encoding || "utf-8") || "(Teks kosong)";
+        } else if (record.recordType === "url" || record.recordType === "absolute-url") {
+          const urlText = decodeData(record.data).trim();
+          const safeUrl = safeHttpUrl(urlText);
+          if (safeUrl) {
+            const a = document.createElement("a");
+            a.href = safeUrl;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = urlText;
+            value.appendChild(a);
+          } else {
+            value.textContent = urlText || "URL tidak terbaca atau menggunakan skema yang tidak ditautkan.";
+          }
+        } else if (record.recordType === "mime" && mediaType === "application/json") {
+          const raw = decodeData(record.data);
+          try {
+            const pre = document.createElement("pre");
+            pre.textContent = JSON.stringify(JSON.parse(raw), null, 2);
+            value.appendChild(pre);
+          } catch (_) { value.textContent = raw || "JSON kosong/tidak valid."; }
+        } else if (record.recordType === "mime" && mediaType.startsWith("text/")) {
+          value.textContent = decodeData(record.data) || "Teks kosong.";
+        } else if (record.recordType === "mime" && mediaType.startsWith("image/")) {
+          const blob = new Blob([bytes], { type: mediaType });
+          const objectUrl = URL.createObjectURL(blob);
+          objectUrls.push(objectUrl);
+          const img = document.createElement("img");
+          img.className = "record-image";
+          img.src = objectUrl;
+          img.alt = "Gambar dari NFC tag";
+          value.appendChild(img);
+          addDownloadLink(value, bytes, mediaType, "nfc-image");
+        } else if (record.recordType === "smart-poster" && typeof record.toRecords === "function") {
+          value.textContent = "Smart Poster berisi sub-record:";
+        } else if (bytes.byteLength > 0) {
+          const textPreview = decodeData(record.data);
+          const printable = textPreview && [...textPreview].filter(ch => ch === "\n" || ch === "\r" || ch === "\t" || ch >= " ").length / Math.max(textPreview.length, 1);
+          if (printable > 0.85) {
+            value.textContent = textPreview.length > 1200 ? textPreview.slice(0, 1200) + "… (dipotong)" : textPreview;
+          } else {
+            const hex = [...bytes.slice(0, 48)].map(byte => byte.toString(16).padStart(2, "0")).join(" ");
+            value.textContent = "Data biner. Pratinjau HEX: " + hex + (bytes.length > 48 ? " …" : "");
+          }
+          addDownloadLink(value, bytes, mediaType || "application/octet-stream", "nfc-record-" + (index + 1) + ".bin");
+        } else {
+          value.textContent = "Tidak ada payload yang bisa ditampilkan.";
+        }
+
+        article.appendChild(value);
+        if (record.recordType === "smart-poster" && typeof record.toRecords === "function") {
+          try {
+            const children = record.toRecords();
+            if (children && children.length) {
+              const nestedWrap = document.createElement("div");
+              nestedWrap.className = "nested";
+              [...children].forEach((child, childIndex) => nestedWrap.appendChild(createRecordCard(child, childIndex, true)));
+              article.appendChild(nestedWrap);
+            }
+          } catch (_) {
+            const note = document.createElement("div");
+            note.className = "meta";
+            note.textContent = "Sub-record Smart Poster tidak dapat diurai oleh browser ini.";
+            article.appendChild(note);
+          }
+        }
+
+        if (details.length) {
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          meta.textContent = details.join(" · ");
+          article.appendChild(meta);
+        }
+        return article;
+      }
+
+      function showNdefMessage(message) {
+        clearOldResults();
+        const records = message && message.records ? [...message.records] : [];
+        recordCount.textContent = records.length + (records.length === 1 ? " record" : " records");
+        if (records.length === 0) {
+          const note = document.createElement("div");
+          note.className = "empty";
+          note.textContent = "Tag terbaca, tetapi tidak ada NDEF record di dalam pesannya.";
+          recordList.appendChild(note);
+        } else {
+          records.forEach((record, index) => recordList.appendChild(createRecordCard(record, index)));
+        }
+        resultsSection.hidden = false;
+        setStatus("Berhasil membaca tag NFC. Ditemukan " + records.length + " record. Dekatkan tag lain untuk mengganti hasil pembacaan.", "success");
+      }
+
+      function stopScanning(message = "Pemindaian dihentikan.") {
+        if (abortController) {
+          abortController.abort();
+          abortController = null;
+        }
+        activeReader = null;
+        scanButton.disabled = false;
+        stopButton.disabled = true;
+        setStatus(message);
+      }
+
+      async function startScanning() {
+        if (!("NDEFReader" in window)) {
+          setStatus("Browser ini belum mendukung Web NFC. Coba buka website melalui Google Chrome di HP Android yang memiliki NFC. Fitur ini tidak dapat diuji dari browser desktop.", "error");
+          return;
+        }
+        if (!("NDEFReader" in window)) return;
+
+        scanButton.disabled = true;
+        stopButton.disabled = false;
+        setStatus("Meminta izin dan mengaktifkan pemindai NFC…");
+        abortController = new AbortController();
+        activeReader = new NDEFReader();
+
+        activeReader.addEventListener("reading", (event) => {
+          showNdefMessage(event.message);
+        });
+        activeReader.addEventListener("readingerror", () => {
+          setStatus("Tag terdeteksi tetapi record NDEF tidak dapat dibaca. Pastikan tag berformat NDEF dan tidak terkunci dengan proteksi yang menghalangi pembacaan.", "warning");
+        });
+
+        try {
+          await activeReader.scan({ signal: abortController.signal });
+          setStatus("Pemindai aktif. Dekatkan bagian belakang HP ke NFC tag dan tahan sebentar sampai hasil muncul.", "success");
+        } catch (error) {
+          abortController = null;
+          activeReader = null;
+          scanButton.disabled = false;
+          stopButton.disabled = true;
+          let message = "Gagal memulai pemindaian NFC: " + (error && error.message ? error.message : "kesalahan tidak diketahui");
+          if (error && error.name === "NotAllowedError") message = "Izin NFC ditolak. Izinkan akses NFC untuk situs ini, lalu tekan Mulai baca NFC lagi.";
+          else if (error && error.name === "NotSupportedError") message = "NFC tidak tersedia atau tidak aktif pada perangkat ini. Pastikan HP memiliki NFC dan fitur NFC sudah dinyalakan.";
+          else if (error && error.name === "SecurityError") message = "Akses NFC diblokir. Pastikan website dibuka melalui HTTPS dan bukan di dalam iframe.";
+          else if (error && error.name === "InvalidStateError") message = "Pemindaian NFC sudah berjalan. Tekan Hentikan lalu coba lagi.";
+          setStatus(message, "error");
+        }
+      }
+
+      scanButton.addEventListener("click", startScanning);
+      stopButton.addEventListener("click", () => stopScanning());
+      window.addEventListener("pagehide", () => {
+        if (abortController) abortController.abort();
+        objectUrls.forEach((url) => URL.revokeObjectURL(url));
+      });
     })();
   </script>
 </body>
