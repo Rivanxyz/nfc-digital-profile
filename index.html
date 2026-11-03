@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Halaman kontak digital yang dibuka melalui NFC.">
+  <title>NFC Digital Profile</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: rgba(20, 31, 49, .82);
+      --muted: #9aa9bd;
+      --text: #f4f7fb;
+      --line: rgba(255,255,255,.09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 28px 16px;
+      display: grid; place-items: center;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 12% 8%, rgba(31, 134, 117, .23), transparent 36%),
+        radial-gradient(ellipse at 88% 90%, rgba(89, 91, 210, .22), transparent 34%),
+        var(--bg);
+    }
+    .card {
+      width: min(100%, 430px); padding: 30px 24px 22px;
+      border: 1px solid var(--line); border-radius: 28px;
+      background: var(--panel); backdrop-filter: blur(18px);
+      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+    .mark {
+      width: 62px; height: 62px; margin: 0 auto 18px; border-radius: 20px;
+      display: grid; place-items: center; font-size: 27px;
+      background: linear-gradient(135deg, #20b89a, #5277e8);
+      box-shadow: 0 10px 30px rgba(32,184,154,.2);
+    }
+    header { text-align: center; }
+    h1 { margin: 0; font-size: 25px; letter-spacing: -.7px; }
+    .subtitle { margin: 9px 0 25px; color: var(--muted); font-size: 13px; }
+    .label {
+      margin: 0 0 12px; color: #bdc9d8; font-size: 11px;
+      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .links { display: grid; gap: 11px; }
+    .link {
+      display: flex; align-items: center; gap: 14px; padding: 15px;
+      border: 1px solid var(--line); border-radius: 17px;
+      color: var(--text); text-decoration: none; background: rgba(255,255,255,.035);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.07); }
+    .icon {
+      width: 43px; height: 43px; flex: 0 0 43px; border-radius: 14px;
+      display: grid; place-items: center; font-size: 21px;
+    }
+    .wa .icon { background: rgba(37,211,102,.15); }
+    .ig .icon { background: rgba(220,75,145,.15); }
+    .map .icon { background: rgba(73,145,245,.16); }
+    .link-copy { min-width: 0; flex: 1; }
+    .link-title { display: block; font-size: 14px; font-weight: 700; }
+    .link-detail { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+    .arrow { color: #8fa1b8; font-size: 20px; }
+    .empty {
+      padding: 18px; border: 1px dashed rgba(255,255,255,.18); border-radius: 16px;
+      color: var(--muted); font-size: 13px; line-height: 1.6; text-align: center;
+    }
+    footer { margin-top: 24px; text-align: center; color: #728198; font-size: 11px; }
+    .demo {
+      display: inline-block; margin-top: 15px; color: #8edcca; font-size: 12px;
+      text-decoration: none;
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <header>
+      <div class="mark" aria-hidden="true">⌁</div>
+      <h1>Terhubung lebih mudah</h1>
+      <p class="subtitle">Pilih cara untuk menghubungi atau menemukan kami.</p>
+    </header>
+
+    <p class="label">Hubungi & temukan</p>
+    <section id="links" class="links" aria-live="polite"></section>
+    <footer>
+      NFC DIGITAL PROFILE
+      <br>Tap · Connect · Explore
+      <div id="demo-wrap"></div>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const links = document.getElementById("links");
+
+      // Supports: ?wa=628...&ig=username&lat=-8.1&lng=113.7
+      const waRaw = (params.get("wa") || "").trim();
+      const igRaw = (params.get("ig") || "").trim().replace(/^@/, "");
+      const lat = Number(params.get("lat"));
+      const lng = Number(params.get("lng"));
+
+      const addLink = ({ cls, icon, title, detail, href, label }) => {
+        const a = document.createElement("a");
+        a.className = `link ${cls}`;
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.setAttribute("aria-label", label);
+        const iconEl = document.createElement("span");
+        iconEl.className = "icon";
+        iconEl.setAttribute("aria-hidden", "true");
+        iconEl.textContent = icon;
+        const copy = document.createElement("span");
+        copy.className = "link-copy";
+        const titleEl = document.createElement("span");
+        titleEl.className = "link-title";
+        titleEl.textContent = title;
+        const detailEl = document.createElement("span");
+        detailEl.className = "link-detail";
+        detailEl.textContent = detail;
+        copy.append(titleEl, detailEl);
+        const arrow = document.createElement("span");
+        arrow.className = "arrow";
+        arrow.textContent = "↗";
+        arrow.setAttribute("aria-hidden", "true");
+        a.append(iconEl, copy, arrow);
+        links.appendChild(a);
+      };
+
+      // Indonesian WhatsApp numbers are expected in international format without +.
+      const wa = waRaw.replace(/[^\d]/g, "");
+      if (/^\d{8,15}$/.test(wa)) {
+        addLink({
+          cls: "wa", icon: "◉", title: "WhatsApp",
+          detail: "+" + wa, href: "https://wa.me/" + wa,
+          label: "Hubungi melalui WhatsApp"
+        });
+      }
+
+      if (/^[A-Za-z0-9._]{1,30}$/.test(igRaw)) {
+        addLink({
+          cls: "ig", icon: "◎", title: "Instagram",
+          detail: "@" + igRaw, href: "https://www.instagram.com/" + encodeURIComponent(igRaw) + "/",
+          label: "Buka profil Instagram"
+        });
+      }
+
+      if (params.has("lat") && params.has("lng") &&
+          Number.isFinite(lat) && Number.isFinite(lng) &&
+          lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(lat + "," + lng)}`;
+        addLink({
+          cls: "map", icon: "⌖", title: "Lokasi",
+          detail: "Lihat di Google Maps", href: mapsUrl,
+          label: "Buka lokasi di Google Maps"
+        });
+      }
+
+      if (links.children.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Belum ada informasi kontak yang tersedia. Pastikan NFC tag berisi URL dengan parameter wa, ig, atau koordinat lat dan lng.";
+        links.appendChild(empty);
+        const demo = document.createElement("a");
+        demo.className = "demo";
+        demo.href = "?wa=6281234567890&ig=contoh.akun&lat=-8.172&lng=113.701";
+        demo.textContent = "Lihat contoh tampilan";
+        document.getElementById("demo-wrap").appendChild(demo);
+      }
+    })();
+  </script>
+</body>
+</html>
